@@ -246,7 +246,7 @@ namespace simpleFOCTuning
             Thread.Sleep(dt);
             SendData(Encoding.ASCII.GetBytes(textBox6.Text + "E" + "\n"));
             Thread.Sleep(dt);
-            SendData(Encoding.ASCII.GetBytes(textBox6.Text + "AAAAAATEST222" + "\n"));
+            SendData(Encoding.ASCII.GetBytes(textBox6.Text + "AAAAAATEST3" + "\n"));
         }
     }
 
