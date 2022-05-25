@@ -245,10 +245,6 @@ namespace simpleFOCTuning
             SendData(Encoding.ASCII.GetBytes(textBox6.Text + "WC" + "\n"));
             Thread.Sleep(dt);
             SendData(Encoding.ASCII.GetBytes(textBox6.Text + "E" + "\n"));
-            Thread.Sleep(dt);
-            SendData(Encoding.ASCII.GetBytes(textBox6.Text + "change line" + "\n"));
-            Thread.Sleep(dt);
-            SendData(Encoding.ASCII.GetBytes(textBox6.Text + "new line" + "\n"));
         }
     }
 
