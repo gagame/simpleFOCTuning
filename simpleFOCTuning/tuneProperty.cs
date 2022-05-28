@@ -113,24 +113,28 @@ namespace simpleFOCTuning
         [CustomSortedCategoryAttribute("Current d PID", 5, 6), DisplayName("LowPassFilter"), PropertyOrder(5)]
         public double? CurrentdLowPassFilter { get { return _cdlp; } set { _cdlp = value; } }
 
-
+        private double? _vl = null;
         [CustomSortedCategoryAttribute("Limit", 6, 6), PropertyOrder(0)]
-        public double? VelocityLimit { get; set; }
+        public double? VelocityLimit { get { return _vl; } set { _vl = value; } }
+        private double? _ul = null;
         [CustomSortedCategoryAttribute("Limit", 6, 6), PropertyOrder(1)]
-        public double? VoltageLimit { get; set; }
+        public double? VoltageLimit { get { return _ul; } set { _ul = value; } }
+        private double? _cl = null;
         [CustomSortedCategoryAttribute("Limit", 6, 6), PropertyOrder(2)]
-        public double? CurrentLimit { get; set; }
+        public double? CurrentLimit { get { return _cl; } set { _cl = value; } }
 
-
+        private double? _zo = null;
         [CustomSortedCategoryAttribute("SensorConfig", 7, 6), PropertyOrder(0)]
-        public double? ZeroAngleOffset { get; set; }
+        public double? ZeroAngleOffset { get { return _zo; } set { _zo = value; } }
+        private double? _ezo = null;
         [CustomSortedCategoryAttribute("SensorConfig", 7, 6), PropertyOrder(1)]
-        public double? ElectricalZeroOffset { get; set; }
+        public double? ElectricalZeroOffset { get { return _ezo; } set { _ezo = value; } }
 
-
+        private double? _pr = null;
         [CustomSortedCategoryAttribute("GeneralResistance", 8, 6), PropertyOrder(0)]
-        public double? PhaseResistance { get; set; }
+        public double? PhaseResistance { get { return _pr; } set { _pr = value; } }
+        private double? _ms = null;
         [CustomSortedCategoryAttribute("GeneralResistance", 8, 6), PropertyOrder(1)]
-        public double? MotorStatus { get; set; }
+        public double? MotorStatus { get { return _ms; } set { _ms = value; } }
     }
 }
