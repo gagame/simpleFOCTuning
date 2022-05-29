@@ -32,6 +32,13 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.textBoxGeneralCMD = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.buttonGeneral = new System.Windows.Forms.Button();
+            this.textBoxInterval = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.textBoxPos2 = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.textBoxPos1 = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.buttonConfigure = new System.Windows.Forms.Button();
@@ -57,6 +64,21 @@
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.buttonChartClear = new System.Windows.Forms.Button();
+            this.textBoxDownsample = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.checkBoxAngle = new System.Windows.Forms.CheckBox();
+            this.checkBoxVelocity = new System.Windows.Forms.CheckBox();
+            this.checkBoxCd = new System.Windows.Forms.CheckBox();
+            this.checkBoxCq = new System.Windows.Forms.CheckBox();
+            this.checkBoxVd = new System.Windows.Forms.CheckBox();
+            this.checkBoxVq = new System.Windows.Forms.CheckBox();
+            this.buttonChartPause = new System.Windows.Forms.Button();
+            this.buttonChartView = new System.Windows.Forms.Button();
+            this.checkBoxTarget = new System.Windows.Forms.CheckBox();
+            this.buttonChartStart = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label8 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -64,35 +86,14 @@
             this.buttonListDevice = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
-            this.textBoxPos2 = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.textBoxInterval = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.buttonGeneral = new System.Windows.Forms.Button();
-            this.textBoxGeneralCMD = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.buttonChartStart = new System.Windows.Forms.Button();
-            this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
-            this.checkBoxTarget = new System.Windows.Forms.CheckBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.checkBoxVq = new System.Windows.Forms.CheckBox();
-            this.checkBoxVd = new System.Windows.Forms.CheckBox();
-            this.checkBoxCq = new System.Windows.Forms.CheckBox();
-            this.checkBoxCd = new System.Windows.Forms.CheckBox();
-            this.checkBoxVelocity = new System.Windows.Forms.CheckBox();
-            this.checkBoxAngle = new System.Windows.Forms.CheckBox();
-            this.textBoxDownsample = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.panel8.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -150,6 +151,69 @@
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(537, 171);
             this.panel7.TabIndex = 18;
+            // 
+            // textBoxGeneralCMD
+            // 
+            this.textBoxGeneralCMD.Location = new System.Drawing.Point(356, 18);
+            this.textBoxGeneralCMD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBoxGeneralCMD.Name = "textBoxGeneralCMD";
+            this.textBoxGeneralCMD.Size = new System.Drawing.Size(69, 25);
+            this.textBoxGeneralCMD.TabIndex = 34;
+            this.textBoxGeneralCMD.Text = "T";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(284, 22);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(69, 15);
+            this.label14.TabIndex = 33;
+            this.label14.Text = "Command:";
+            // 
+            // buttonGeneral
+            // 
+            this.buttonGeneral.Location = new System.Drawing.Point(440, 19);
+            this.buttonGeneral.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonGeneral.Name = "buttonGeneral";
+            this.buttonGeneral.Size = new System.Drawing.Size(81, 53);
+            this.buttonGeneral.TabIndex = 32;
+            this.buttonGeneral.Text = "Start";
+            this.buttonGeneral.UseVisualStyleBackColor = true;
+            this.buttonGeneral.Click += new System.EventHandler(this.buttonGeneral_Click);
+            // 
+            // textBoxInterval
+            // 
+            this.textBoxInterval.Location = new System.Drawing.Point(356, 52);
+            this.textBoxInterval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBoxInterval.Name = "textBoxInterval";
+            this.textBoxInterval.Size = new System.Drawing.Size(69, 25);
+            this.textBoxInterval.TabIndex = 31;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(298, 56);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(55, 15);
+            this.label13.TabIndex = 30;
+            this.label13.Text = "Interval:";
+            // 
+            // textBoxPos2
+            // 
+            this.textBoxPos2.Location = new System.Drawing.Point(224, 52);
+            this.textBoxPos2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBoxPos2.Name = "textBoxPos2";
+            this.textBoxPos2.Size = new System.Drawing.Size(69, 25);
+            this.textBoxPos2.TabIndex = 29;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(155, 56);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(64, 15);
+            this.label12.TabIndex = 28;
+            this.label12.Text = "Position2:";
             // 
             // textBoxPos1
             // 
@@ -402,6 +466,166 @@
             this.panel4.Size = new System.Drawing.Size(886, 438);
             this.panel4.TabIndex = 1;
             // 
+            // cartesianChart1
+            // 
+            this.cartesianChart1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cartesianChart1.Location = new System.Drawing.Point(0, 0);
+            this.cartesianChart1.Name = "cartesianChart1";
+            this.cartesianChart1.Size = new System.Drawing.Size(766, 438);
+            this.cartesianChart1.TabIndex = 2;
+            this.cartesianChart1.Text = "cartesianChart1";
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.buttonChartClear);
+            this.panel8.Controls.Add(this.textBoxDownsample);
+            this.panel8.Controls.Add(this.label15);
+            this.panel8.Controls.Add(this.checkBoxAngle);
+            this.panel8.Controls.Add(this.checkBoxVelocity);
+            this.panel8.Controls.Add(this.checkBoxCd);
+            this.panel8.Controls.Add(this.checkBoxCq);
+            this.panel8.Controls.Add(this.checkBoxVd);
+            this.panel8.Controls.Add(this.checkBoxVq);
+            this.panel8.Controls.Add(this.buttonChartPause);
+            this.panel8.Controls.Add(this.buttonChartView);
+            this.panel8.Controls.Add(this.checkBoxTarget);
+            this.panel8.Controls.Add(this.buttonChartStart);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel8.Location = new System.Drawing.Point(766, 0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(120, 438);
+            this.panel8.TabIndex = 1;
+            // 
+            // buttonChartClear
+            // 
+            this.buttonChartClear.Location = new System.Drawing.Point(13, 102);
+            this.buttonChartClear.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonChartClear.Name = "buttonChartClear";
+            this.buttonChartClear.Size = new System.Drawing.Size(95, 22);
+            this.buttonChartClear.TabIndex = 29;
+            this.buttonChartClear.Text = "Clear";
+            this.buttonChartClear.UseVisualStyleBackColor = true;
+            this.buttonChartClear.Click += new System.EventHandler(this.buttonChartClear_Click);
+            // 
+            // textBoxDownsample
+            // 
+            this.textBoxDownsample.Location = new System.Drawing.Point(13, 371);
+            this.textBoxDownsample.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBoxDownsample.Name = "textBoxDownsample";
+            this.textBoxDownsample.Size = new System.Drawing.Size(85, 25);
+            this.textBoxDownsample.TabIndex = 28;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(10, 349);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(84, 15);
+            this.label15.TabIndex = 27;
+            this.label15.Text = "Downsample:";
+            // 
+            // checkBoxAngle
+            // 
+            this.checkBoxAngle.AutoSize = true;
+            this.checkBoxAngle.Location = new System.Drawing.Point(21, 296);
+            this.checkBoxAngle.Name = "checkBoxAngle";
+            this.checkBoxAngle.Size = new System.Drawing.Size(63, 19);
+            this.checkBoxAngle.TabIndex = 26;
+            this.checkBoxAngle.Text = "Angle";
+            this.checkBoxAngle.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxVelocity
+            // 
+            this.checkBoxVelocity.AutoSize = true;
+            this.checkBoxVelocity.Location = new System.Drawing.Point(21, 271);
+            this.checkBoxVelocity.Name = "checkBoxVelocity";
+            this.checkBoxVelocity.Size = new System.Drawing.Size(77, 19);
+            this.checkBoxVelocity.TabIndex = 25;
+            this.checkBoxVelocity.Text = "Velocity";
+            this.checkBoxVelocity.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCd
+            // 
+            this.checkBoxCd.AutoSize = true;
+            this.checkBoxCd.Location = new System.Drawing.Point(21, 246);
+            this.checkBoxCd.Name = "checkBoxCd";
+            this.checkBoxCd.Size = new System.Drawing.Size(45, 19);
+            this.checkBoxCd.TabIndex = 24;
+            this.checkBoxCd.Text = "Cd";
+            this.checkBoxCd.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCq
+            // 
+            this.checkBoxCq.AutoSize = true;
+            this.checkBoxCq.Location = new System.Drawing.Point(21, 221);
+            this.checkBoxCq.Name = "checkBoxCq";
+            this.checkBoxCq.Size = new System.Drawing.Size(45, 19);
+            this.checkBoxCq.TabIndex = 23;
+            this.checkBoxCq.Text = "Cq";
+            this.checkBoxCq.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxVd
+            // 
+            this.checkBoxVd.AutoSize = true;
+            this.checkBoxVd.Location = new System.Drawing.Point(21, 196);
+            this.checkBoxVd.Name = "checkBoxVd";
+            this.checkBoxVd.Size = new System.Drawing.Size(46, 19);
+            this.checkBoxVd.TabIndex = 22;
+            this.checkBoxVd.Text = "Vd";
+            this.checkBoxVd.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxVq
+            // 
+            this.checkBoxVq.AutoSize = true;
+            this.checkBoxVq.Location = new System.Drawing.Point(22, 171);
+            this.checkBoxVq.Name = "checkBoxVq";
+            this.checkBoxVq.Size = new System.Drawing.Size(46, 19);
+            this.checkBoxVq.TabIndex = 21;
+            this.checkBoxVq.Text = "Vq";
+            this.checkBoxVq.UseVisualStyleBackColor = true;
+            // 
+            // buttonChartPause
+            // 
+            this.buttonChartPause.Location = new System.Drawing.Point(13, 42);
+            this.buttonChartPause.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonChartPause.Name = "buttonChartPause";
+            this.buttonChartPause.Size = new System.Drawing.Size(95, 22);
+            this.buttonChartPause.TabIndex = 20;
+            this.buttonChartPause.Text = "Pause";
+            this.buttonChartPause.UseVisualStyleBackColor = true;
+            this.buttonChartPause.Click += new System.EventHandler(this.buttonChartPause_Click);
+            // 
+            // buttonChartView
+            // 
+            this.buttonChartView.Location = new System.Drawing.Point(13, 71);
+            this.buttonChartView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonChartView.Name = "buttonChartView";
+            this.buttonChartView.Size = new System.Drawing.Size(95, 22);
+            this.buttonChartView.TabIndex = 19;
+            this.buttonChartView.Text = "View All";
+            this.buttonChartView.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxTarget
+            // 
+            this.checkBoxTarget.AutoSize = true;
+            this.checkBoxTarget.Location = new System.Drawing.Point(22, 146);
+            this.checkBoxTarget.Name = "checkBoxTarget";
+            this.checkBoxTarget.Size = new System.Drawing.Size(66, 19);
+            this.checkBoxTarget.TabIndex = 18;
+            this.checkBoxTarget.Text = "Target";
+            this.checkBoxTarget.UseVisualStyleBackColor = true;
+            // 
+            // buttonChartStart
+            // 
+            this.buttonChartStart.Location = new System.Drawing.Point(13, 11);
+            this.buttonChartStart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.buttonChartStart.Name = "buttonChartStart";
+            this.buttonChartStart.Size = new System.Drawing.Size(95, 22);
+            this.buttonChartStart.TabIndex = 17;
+            this.buttonChartStart.Text = "Start";
+            this.buttonChartStart.UseVisualStyleBackColor = true;
+            this.buttonChartStart.Click += new System.EventHandler(this.buttonChartStart_Click);
+            // 
             // panel3
             // 
             this.panel3.Controls.Add(this.label8);
@@ -430,7 +654,7 @@
             // richTextBox1
             // 
             this.richTextBox1.Location = new System.Drawing.Point(29, 41);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(4);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(823, 119);
             this.richTextBox1.TabIndex = 30;
@@ -476,216 +700,6 @@
             this.buttonSend.UseVisualStyleBackColor = true;
             this.buttonSend.Click += new System.EventHandler(this.buttonSend_Click);
             // 
-            // textBoxPos2
-            // 
-            this.textBoxPos2.Location = new System.Drawing.Point(224, 52);
-            this.textBoxPos2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBoxPos2.Name = "textBoxPos2";
-            this.textBoxPos2.Size = new System.Drawing.Size(69, 25);
-            this.textBoxPos2.TabIndex = 29;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(155, 56);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(64, 15);
-            this.label12.TabIndex = 28;
-            this.label12.Text = "Position2:";
-            // 
-            // textBoxInterval
-            // 
-            this.textBoxInterval.Location = new System.Drawing.Point(356, 52);
-            this.textBoxInterval.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBoxInterval.Name = "textBoxInterval";
-            this.textBoxInterval.Size = new System.Drawing.Size(69, 25);
-            this.textBoxInterval.TabIndex = 31;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(298, 56);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(55, 15);
-            this.label13.TabIndex = 30;
-            this.label13.Text = "Interval:";
-            // 
-            // buttonGeneral
-            // 
-            this.buttonGeneral.Location = new System.Drawing.Point(440, 19);
-            this.buttonGeneral.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.buttonGeneral.Name = "buttonGeneral";
-            this.buttonGeneral.Size = new System.Drawing.Size(81, 53);
-            this.buttonGeneral.TabIndex = 32;
-            this.buttonGeneral.Text = "Start";
-            this.buttonGeneral.UseVisualStyleBackColor = true;
-            this.buttonGeneral.Click += new System.EventHandler(this.buttonGeneral_Click);
-            // 
-            // textBoxGeneralCMD
-            // 
-            this.textBoxGeneralCMD.Location = new System.Drawing.Point(356, 18);
-            this.textBoxGeneralCMD.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBoxGeneralCMD.Name = "textBoxGeneralCMD";
-            this.textBoxGeneralCMD.Size = new System.Drawing.Size(69, 25);
-            this.textBoxGeneralCMD.TabIndex = 34;
-            this.textBoxGeneralCMD.Text = "T";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(284, 22);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(69, 15);
-            this.label14.TabIndex = 33;
-            this.label14.Text = "Command:";
-            // 
-            // panel8
-            // 
-            this.panel8.Controls.Add(this.textBoxDownsample);
-            this.panel8.Controls.Add(this.label15);
-            this.panel8.Controls.Add(this.checkBoxAngle);
-            this.panel8.Controls.Add(this.checkBoxVelocity);
-            this.panel8.Controls.Add(this.checkBoxCd);
-            this.panel8.Controls.Add(this.checkBoxCq);
-            this.panel8.Controls.Add(this.checkBoxVd);
-            this.panel8.Controls.Add(this.checkBoxVq);
-            this.panel8.Controls.Add(this.button5);
-            this.panel8.Controls.Add(this.button4);
-            this.panel8.Controls.Add(this.checkBoxTarget);
-            this.panel8.Controls.Add(this.buttonChartStart);
-            this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel8.Location = new System.Drawing.Point(766, 0);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(120, 438);
-            this.panel8.TabIndex = 1;
-            // 
-            // buttonChartStart
-            // 
-            this.buttonChartStart.Location = new System.Drawing.Point(13, 11);
-            this.buttonChartStart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.buttonChartStart.Name = "buttonChartStart";
-            this.buttonChartStart.Size = new System.Drawing.Size(95, 22);
-            this.buttonChartStart.TabIndex = 17;
-            this.buttonChartStart.Text = "Start";
-            this.buttonChartStart.UseVisualStyleBackColor = true;
-            this.buttonChartStart.Click += new System.EventHandler(this.buttonChartStart_Click);
-            // 
-            // cartesianChart1
-            // 
-            this.cartesianChart1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cartesianChart1.Location = new System.Drawing.Point(0, 0);
-            this.cartesianChart1.Name = "cartesianChart1";
-            this.cartesianChart1.Size = new System.Drawing.Size(766, 438);
-            this.cartesianChart1.TabIndex = 2;
-            this.cartesianChart1.Text = "cartesianChart1";
-            // 
-            // checkBoxTarget
-            // 
-            this.checkBoxTarget.AutoSize = true;
-            this.checkBoxTarget.Location = new System.Drawing.Point(22, 112);
-            this.checkBoxTarget.Name = "checkBoxTarget";
-            this.checkBoxTarget.Size = new System.Drawing.Size(66, 19);
-            this.checkBoxTarget.TabIndex = 18;
-            this.checkBoxTarget.Text = "Target";
-            this.checkBoxTarget.UseVisualStyleBackColor = true;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(13, 71);
-            this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(95, 22);
-            this.button4.TabIndex = 19;
-            this.button4.Text = "View All";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(13, 42);
-            this.button5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(95, 22);
-            this.button5.TabIndex = 20;
-            this.button5.Text = "Pause";
-            this.button5.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxVq
-            // 
-            this.checkBoxVq.AutoSize = true;
-            this.checkBoxVq.Location = new System.Drawing.Point(22, 137);
-            this.checkBoxVq.Name = "checkBoxVq";
-            this.checkBoxVq.Size = new System.Drawing.Size(46, 19);
-            this.checkBoxVq.TabIndex = 21;
-            this.checkBoxVq.Text = "Vq";
-            this.checkBoxVq.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxVd
-            // 
-            this.checkBoxVd.AutoSize = true;
-            this.checkBoxVd.Location = new System.Drawing.Point(21, 162);
-            this.checkBoxVd.Name = "checkBoxVd";
-            this.checkBoxVd.Size = new System.Drawing.Size(46, 19);
-            this.checkBoxVd.TabIndex = 22;
-            this.checkBoxVd.Text = "Vd";
-            this.checkBoxVd.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxCq
-            // 
-            this.checkBoxCq.AutoSize = true;
-            this.checkBoxCq.Location = new System.Drawing.Point(21, 187);
-            this.checkBoxCq.Name = "checkBoxCq";
-            this.checkBoxCq.Size = new System.Drawing.Size(45, 19);
-            this.checkBoxCq.TabIndex = 23;
-            this.checkBoxCq.Text = "Cq";
-            this.checkBoxCq.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxCd
-            // 
-            this.checkBoxCd.AutoSize = true;
-            this.checkBoxCd.Location = new System.Drawing.Point(21, 212);
-            this.checkBoxCd.Name = "checkBoxCd";
-            this.checkBoxCd.Size = new System.Drawing.Size(45, 19);
-            this.checkBoxCd.TabIndex = 24;
-            this.checkBoxCd.Text = "Cd";
-            this.checkBoxCd.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxVelocity
-            // 
-            this.checkBoxVelocity.AutoSize = true;
-            this.checkBoxVelocity.Location = new System.Drawing.Point(21, 237);
-            this.checkBoxVelocity.Name = "checkBoxVelocity";
-            this.checkBoxVelocity.Size = new System.Drawing.Size(77, 19);
-            this.checkBoxVelocity.TabIndex = 25;
-            this.checkBoxVelocity.Text = "Velocity";
-            this.checkBoxVelocity.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxAngle
-            // 
-            this.checkBoxAngle.AutoSize = true;
-            this.checkBoxAngle.Location = new System.Drawing.Point(21, 262);
-            this.checkBoxAngle.Name = "checkBoxAngle";
-            this.checkBoxAngle.Size = new System.Drawing.Size(63, 19);
-            this.checkBoxAngle.TabIndex = 26;
-            this.checkBoxAngle.Text = "Angle";
-            this.checkBoxAngle.UseVisualStyleBackColor = true;
-            // 
-            // textBoxDownsample
-            // 
-            this.textBoxDownsample.Location = new System.Drawing.Point(13, 371);
-            this.textBoxDownsample.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBoxDownsample.Name = "textBoxDownsample";
-            this.textBoxDownsample.Size = new System.Drawing.Size(85, 25);
-            this.textBoxDownsample.TabIndex = 28;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(10, 349);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(84, 15);
-            this.label15.TabIndex = 27;
-            this.label15.Text = "Downsample:";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -705,10 +719,10 @@
             this.panel5.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -769,9 +783,10 @@
         private System.Windows.Forms.CheckBox checkBoxCq;
         private System.Windows.Forms.CheckBox checkBoxVd;
         private System.Windows.Forms.CheckBox checkBoxVq;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button buttonChartPause;
+        private System.Windows.Forms.Button buttonChartView;
         private System.Windows.Forms.CheckBox checkBoxTarget;
+        private System.Windows.Forms.Button buttonChartClear;
     }
 }
 

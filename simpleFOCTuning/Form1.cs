@@ -1,4 +1,5 @@
 ﻿using LiveCharts.Geared;
+using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace simpleFOCTuning
 {
@@ -19,9 +21,18 @@ namespace simpleFOCTuning
         {
             InitializeComponent(); 
 
-            cartesianChart1.Series.Add(new GLineSeries
+            cartesianChart1.Series.Add(new LineSeries
             {
-                Values = _viewModel.Values
+                Values = _viewModelTarget.Values,
+                Fill = Brushes.Transparent,
+                StrokeThickness = 1,
+                PointGeometry = null
+            });
+            cartesianChart1.Series.Add(new LineSeries
+            {
+                Values = _viewModelAngle.Values,
+                Fill = Brushes.Transparent,
+                StrokeThickness = 1,
             });
             cartesianChart1.DisableAnimations = true;
         }
@@ -32,8 +43,10 @@ namespace simpleFOCTuning
 
 
 
-        private LiveChart _viewModel = new LiveChart();
+        private LiveChart _viewModelAngle = new LiveChart();
+        private LiveChart _viewModelTarget = new LiveChart();
 
+        public static Queue<string> MyQueue;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -281,7 +294,8 @@ namespace simpleFOCTuning
                 {
                     this.Invoke(new Action(() =>
                     {
-                        _viewModel.Trend=double.Parse(strArray[6]);
+                        _viewModelAngle.Trend = double.Parse(strArray[6]);
+                        _viewModelTarget.Trend=double.Parse(strArray[0]);
                         textBoxTopAngle.Text = strArray[6];
                         textBoxTopVelocity.Text = strArray[5];
                         textBoxTopVoltage.Text = strArray[1];
@@ -713,8 +727,20 @@ namespace simpleFOCTuning
 
         private void buttonChartStart_Click(object sender, EventArgs e)
         {
-            _viewModel.Read();
+            _viewModelTarget.Read();
+            _viewModelAngle.Read();
         }
+        private void buttonChartPause_Click(object sender, EventArgs e)
+        {
+            _viewModelTarget.Stop();
+            _viewModelAngle.Stop();
+        }
+        private void buttonChartClear_Click(object sender, EventArgs e)
+        {
+            _viewModelTarget.Values.Clear();
+            _viewModelAngle.Values.Clear();
+        }
+
     }
 
 }

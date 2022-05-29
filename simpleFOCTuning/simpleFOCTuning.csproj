@@ -94,6 +94,7 @@
     <Compile Include="PropertySorter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RS485Helper.cs" />
     <Compile Include="serialConfig.cs" />
     <Compile Include="tuneProperty.cs" />
     <EmbeddedResource Include="ConfigureSerialConnect.resx">
