@@ -64,7 +64,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.cartesianChart1 = new LiveCharts.WinForms.CartesianChart();
             this.panel8 = new System.Windows.Forms.Panel();
             this.buttonChartClear = new System.Windows.Forms.Button();
             this.textBoxDownsample = new System.Windows.Forms.TextBox();
@@ -188,6 +187,7 @@
             this.textBoxInterval.Name = "textBoxInterval";
             this.textBoxInterval.Size = new System.Drawing.Size(69, 25);
             this.textBoxInterval.TabIndex = 31;
+            this.textBoxInterval.Text = "500";
             // 
             // label13
             // 
@@ -205,6 +205,7 @@
             this.textBoxPos2.Name = "textBoxPos2";
             this.textBoxPos2.Size = new System.Drawing.Size(69, 25);
             this.textBoxPos2.TabIndex = 29;
+            this.textBoxPos2.Text = "5";
             // 
             // label12
             // 
@@ -222,6 +223,7 @@
             this.textBoxPos1.Name = "textBoxPos1";
             this.textBoxPos1.Size = new System.Drawing.Size(69, 25);
             this.textBoxPos1.TabIndex = 27;
+            this.textBoxPos1.Text = "0";
             // 
             // label11
             // 
@@ -457,7 +459,6 @@
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.cartesianChart1);
             this.panel4.Controls.Add(this.panel8);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 0);
@@ -465,15 +466,6 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(886, 438);
             this.panel4.TabIndex = 1;
-            // 
-            // cartesianChart1
-            // 
-            this.cartesianChart1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cartesianChart1.Location = new System.Drawing.Point(0, 0);
-            this.cartesianChart1.Name = "cartesianChart1";
-            this.cartesianChart1.Size = new System.Drawing.Size(766, 438);
-            this.cartesianChart1.TabIndex = 2;
-            this.cartesianChart1.Text = "cartesianChart1";
             // 
             // panel8
             // 
@@ -774,7 +766,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.Button buttonChartStart;
-        private LiveCharts.WinForms.CartesianChart cartesianChart1;
         private System.Windows.Forms.TextBox textBoxDownsample;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.CheckBox checkBoxAngle;

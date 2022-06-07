@@ -19,34 +19,35 @@ namespace simpleFOCTuning
     {
         public Form1()
         {
-            InitializeComponent(); 
+            InitializeComponent();
 
-            cartesianChart1.Series.Add(new LineSeries
-            {
-                Values = _viewModelTarget.Values,
-                Fill = Brushes.Transparent,
-                StrokeThickness = 1,
-                PointGeometry = null
-            });
-            cartesianChart1.Series.Add(new LineSeries
-            {
-                Values = _viewModelAngle.Values,
-                Fill = Brushes.Transparent,
-                StrokeThickness = 1,
-            });
-            cartesianChart1.DisableAnimations = true;
+            //cartesianChart1.Series.Add(new LineSeries
+            //{
+            //    Values = _viewModelTarget.Values,
+            //    Fill = Brushes.Transparent,
+            //    StrokeThickness = 1,
+            //    PointGeometry = null
+            //});
+            //cartesianChart1.Series.Add(new LineSeries
+            //{
+            //    Values = _viewModelAngle.Values,
+            //    Fill = Brushes.Transparent,
+            //    StrokeThickness = 1,
+            //});
+            //cartesianChart1.DisableAnimations = true;
         }
 
-        serialConfig sc = serialConfig.Instance;
-        tuneProperty tp = new tuneProperty();
-        SerialPort port = new SerialPort();
-
-
-
+        private tuneProperty tp = new tuneProperty();
+        private RS485Helper rs485Helper = new RS485Helper();
+        private CancellationTokenSource ctsRS485;
+        private CancellationTokenSource ctsMain;
+        Task task1;
+        bool isCancel = false;
+        int sampleRate = 100;
+        int delayTime = 10;
         private LiveChart _viewModelAngle = new LiveChart();
         private LiveChart _viewModelTarget = new LiveChart();
 
-        public static Queue<string> MyQueue;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -54,12 +55,9 @@ namespace simpleFOCTuning
             propertyGrid1.ToolbarVisible = false;
             propertyGrid1.HelpVisible = false;
             propertyGrid1.PropertySort = PropertySort.Categorized;
-
-            port.ReadBufferSize = 50;
-            port.ReadTimeout = 600;
-            port.DataReceived += PortDataReceive;
-
             propertyGrid1.PropertyValueChanged += PropertyChange;
+
+            rs485Helper.portReceiveEventHandler += UpdateUI;
         }
 
         private void buttonConfigure_Click(object sender, EventArgs e)
@@ -70,36 +68,28 @@ namespace simpleFOCTuning
 
         private void buttonConnect_Click(object sender, EventArgs e)
         {
-            try
+            rs485Helper.PortOpenClose();
+            ctsRS485 = new CancellationTokenSource();
+            ctsRS485.Token.Register(() =>
             {
-                if (!port.IsOpen)
+                //when rs485Helper task cancel
+            });
+            if (rs485Helper.IsOpen)
+            {
+                this.Invoke(new Action(() =>
                 {
-                    GC.Collect();
-                    port.PortName = sc.myPortName;
-                    port.BaudRate = sc.myBaud;
-                    port.StopBits = (sc.myStopbits == "1") ? StopBits.One : StopBits.Two;
-                    if (sc.myParity == "None") port.Parity = Parity.None;
-                    else if (sc.myParity == "Odd") port.Parity = Parity.Odd;
-                    else if (sc.myParity == "Even") port.Parity = Parity.Even;
-                    else if (sc.myParity == "Space") port.Parity = Parity.Space;
-                    port.DataBits = sc.myBytebits;
-                    port.Open();
-                    port.DiscardInBuffer();
-                    port.DiscardOutBuffer();
+                    rs485Helper.startTask(ctsRS485.Token);
                     buttonConnect.Text = "Disconnect";
-                }
-                else if (port.IsOpen)
-                {
-                    port.DiscardInBuffer();
-                    port.DiscardOutBuffer();
-                    port.Close();
-                    GC.Collect();
-                    buttonConnect.Text = "Connect";
-                }
+                    createTask();
+                }));
             }
-            catch (Exception ex)
+            else if (!rs485Helper.IsOpen)
             {
-                MessageBox.Show(ex.Message);
+                this.Invoke(new Action(() =>
+                {
+                    buttonConnect.Text = "Connect";
+                    cancelTask();
+                }));
             }
         }
 
@@ -107,23 +97,22 @@ namespace simpleFOCTuning
         {
             if (button1.Text == "Enable Device")
             {
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "E1" + "\n"));
+                SendData(textBoxConnectCMD.Text + "E1" + "\n");
                 button1.Text = "Disable Device";
             }
             else if (button1.Text == "Disable Device")
             {
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "E0" + "\n"));
+                SendData(textBoxConnectCMD.Text + "E0" + "\n");
                 button1.Text = "Enable Device";
             }
         }
-
-        private void SendData(byte[] sendBuffer)
+        private void SendData(string sendBuffer)
         {
             if (sendBuffer != null)
             {
                 try
                 {
-                    port.Write(sendBuffer, 0, sendBuffer.Length);
+                    rs485Helper.PortSendData(sendBuffer);
                 }
                 catch
                 {
@@ -135,26 +124,25 @@ namespace simpleFOCTuning
         {
             try
             {
-                int dt = 5;
                 switch (e.ChangedItem.PropertyDescriptor.Name)
                 {
                     case "MCT":
                         switch (e.ChangedItem.Value)
                         {
                             case tuneProperty.MotionControlType.Torque:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "C0" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "C0" + "\n");
                                 break;
                             case tuneProperty.MotionControlType.Velocity:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "C1" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "C1" + "\n");
                                 break;
                             case tuneProperty.MotionControlType.Angle:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "C2" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "C2" + "\n");
                                 break;
                             case tuneProperty.MotionControlType.VelocityOpenloop:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "C3" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "C3" + "\n");
                                 break;
                             case tuneProperty.MotionControlType.AngleOpenloop:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "C4" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "C4" + "\n");
                                 break;
                         }
                         break;
@@ -162,148 +150,180 @@ namespace simpleFOCTuning
                         switch (e.ChangedItem.Value)
                         {
                             case tuneProperty.TorqueControlType.Voltage:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "T0" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "T0" + "\n");
                                 break;
                             case tuneProperty.TorqueControlType.DCCurrent:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "T1" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "T1" + "\n");
                                 break;
                             case tuneProperty.TorqueControlType.FOCCurrent:
-                                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "T2" + "\n"));
+                                SendData(textBoxConnectCMD.Text + "T2" + "\n");
                                 break;
                         }
                         break;
                     case "VelocityProportionalGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "MotionDownsample":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "CD" + e.ChangedItem.Value.ToString()+ "\n"));
+                        SendData(textBoxConnectCMD.Text + "CD" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VelocityIntegralGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VelocityDerivativeGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VelocityOutputRamp":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VelocityOutputLitmit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VelocityLowPassFilter":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "VP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "AngleProportionalGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "AngleIntegralGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "AngleDerivativeGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "AngleOutputRamp":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "AngleOutputLitmit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "AngleLowPassFilter":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "AP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentqProportionalGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentqIntegralGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentqDerivativeGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentqOutputRamp":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentqOutputLitmit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentqLowPassFilter":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "QP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentdProportionalGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentdIntegralGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentdDerivativeGain":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentdOutputRamp":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentdOutputLitmit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentdLowPassFilter":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "DP" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VelocityLimit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "LC" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "LC" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "VoltageLimit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "LU" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "LU" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "CurrentLimit":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "LC" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "LC" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "ZeroAngleOffset":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "SM" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "SM" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "ElectricalZeroOffset":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "SE" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "SE" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "PhaseResistance":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "R" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "R" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                     case "MotorStatus":
-                        SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "E" + e.ChangedItem.Value.ToString() + "\n"));
+                        SendData(textBoxConnectCMD.Text + "E" + e.ChangedItem.Value.ToString() + "\n");
                         break;
                 }
             }
             catch { }
         }
-        private void PortDataReceive(object sender, SerialDataReceivedEventArgs e)
+        private void UpdateUI(object sender, PortReceiveDataEventArgs e)
         {
             try
             {
-                Thread.Sleep(5);
-                byte[] buffer = new byte[port.BytesToRead];
-                Int32 lengh = port.Read(buffer, 0, buffer.Length);
-                string str = Encoding.ASCII.GetString(buffer).Replace("\r\n", string.Empty).Replace(" ", string.Empty);
-                string[] strArray = str.Split(new char[] { ':', '\t' });
-                var rawBuffer = Encoding.ASCII.GetString(buffer);
+                //string str = Encoding.ASCII.GetString(buffer).Replace("\r\n", string.Empty).Replace(" ", string.Empty);
+                string[] strArray = new string[] { };
                 this.Invoke(new Action(() =>
                 {
+                    string str = e.ReceiveData.Replace("\r\n", string.Empty).Replace("\r", string.Empty).Replace(" ", string.Empty);
+                    strArray = str.Split(new char[] { ':', '\t' });
                     // set the current caret position to the end
                     richTextBox1.SelectionStart = richTextBox1.Text.Length;
                     // scroll it automatically
                     richTextBox1.ScrollToCaret();
-                    richTextBox1.Text += rawBuffer;
+                    //richTextBox1.Text += e.ReceiveData;
                 }));
-                if(double.TryParse(strArray[0], out double n)&&strArray.Length>6)
-                {
-                    this.Invoke(new Action(() =>
-                    {
-                        _viewModelAngle.Trend = double.Parse(strArray[6]);
-                        _viewModelTarget.Trend=double.Parse(strArray[0]);
-                        textBoxTopAngle.Text = strArray[6];
-                        textBoxTopVelocity.Text = strArray[5];
-                        textBoxTopVoltage.Text = strArray[1];
-                        textBoxTopTarget.Text = strArray[0];
-                    }));
-                }
                 switch (strArray[0])
                 {
+                    case "Monitor|target":
+                        this.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                _viewModelTarget.Trend = double.Parse(strArray[1]);
+                                textBoxTopTarget.Text = strArray[1];
+                            }
+                            catch
+                            {
+
+                            }
+                        }));
+                        break;
+                    case "Monitor|Vq":
+                        this.Invoke(new Action(() =>
+                        {
+                            textBoxTopVoltage.Text = strArray[1];
+                        }));
+                        break;
+                    case "Monitor|Vd":
+                        break;
+                    case "Monitor|Cq":
+                        break;
+                    case "Monitor|Cd":
+                        break;
+                    case "Monitor|vel":
+                        this.Invoke(new Action(() =>
+                        {
+                            textBoxTopVelocity.Text = strArray[1];
+                        }));
+                        break;
+                    case "Monitor|angle":
+                        this.Invoke(new Action(() =>
+                        {
+                            try
+                            {
+                                _viewModelAngle.Trend = double.Parse(strArray[1]);
+                                textBoxTopAngle.Text = strArray[1];
+                            }
+                            catch
+                            {
+
+                            }
+                        }));
+                        break;
                     case "Motion":
                         switch (strArray[1])
                         {
@@ -608,89 +628,111 @@ namespace simpleFOCTuning
 
             }
         }
+        private void createTask()
+        {
+            if (task1?.Status != TaskStatus.Running)
+            {
+                isCancel = false;
+                ctsMain = new CancellationTokenSource();
+                var token1 = ctsMain.Token;
+                task1 = new Task(() =>
+                {
+                    try
+                    {
+                        token1.ThrowIfCancellationRequested();
+                        while (!isCancel)
+                        {
+                            Console.WriteLine(rs485Helper.SendBufferSize);
+                            if (rs485Helper.SendBufferSize > 30)
+                            {
+                                rs485Helper.ClearSendBuffer();
+                            }
+                            GetStatue();
+                            if (token1.IsCancellationRequested)
+                                token1.ThrowIfCancellationRequested();
+                            Thread.Sleep(sampleRate);
+                        }
+                    }
+                    catch
+                    {
 
+                    }
+                }, ctsMain.Token);
+                task1.Start();
+            }
+        }
+
+        private void cancelTask()
+        {
+            if (ctsMain != null)
+            {
+                isCancel = true;
+                ctsMain.Cancel();
+            }
+        }
+        public void GetStatue()
+        {
+            SendData(textBoxConnectCMD.Text + "MG0" + "\n");
+            Thread.Sleep(delayTime);
+            SendData(textBoxConnectCMD.Text + "MG1" + "\n");
+            Thread.Sleep(delayTime);
+            SendData(textBoxConnectCMD.Text + "MG2" + "\n");
+            Thread.Sleep(delayTime);
+            SendData(textBoxConnectCMD.Text + "MG3" + "\n");
+            Thread.Sleep(delayTime);
+            SendData(textBoxConnectCMD.Text + "MG4" + "\n");
+            Thread.Sleep(delayTime);
+            SendData(textBoxConnectCMD.Text + "MG5" + "\n");
+            Thread.Sleep(delayTime);
+            SendData(textBoxConnectCMD.Text + "MG6" + "\n");
+            Thread.Sleep(delayTime);
+        }
         private void buttonPullParams_Click(object sender, EventArgs e)
         {
-            int dt=20;
             Task.Factory.StartNew(async () =>
             {
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "C" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "T" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "CD" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VP" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VI" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VD" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VR" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VL" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "VF" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AP" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AI" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AD" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AR" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AL" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "AF" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DP" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DI" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DD" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DR" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DL" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "DF" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QP" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QI" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QD" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QR" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QL" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "QF" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "LV" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "LU" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "LC" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "SM" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "SE" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "R" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "WC" + "\n"));
-                await Task.Delay(dt);
-                SendData(Encoding.ASCII.GetBytes(textBoxConnectCMD.Text + "E" + "\n"));
+                SendData(textBoxConnectCMD.Text + "C" + "\n");
+                SendData(textBoxConnectCMD.Text + "T" + "\n");
+                SendData(textBoxConnectCMD.Text + "CD" + "\n");
+                SendData(textBoxConnectCMD.Text + "VP" + "\n");
+                SendData(textBoxConnectCMD.Text + "VI" + "\n");
+                SendData(textBoxConnectCMD.Text + "VD" + "\n");
+                SendData(textBoxConnectCMD.Text + "VR" + "\n");
+                SendData(textBoxConnectCMD.Text + "VL" + "\n");
+                SendData(textBoxConnectCMD.Text + "VF" + "\n");
+                SendData(textBoxConnectCMD.Text + "AP" + "\n");
+                SendData(textBoxConnectCMD.Text + "AI" + "\n");
+                SendData(textBoxConnectCMD.Text + "AD" + "\n");
+                SendData(textBoxConnectCMD.Text + "AR" + "\n");
+                SendData(textBoxConnectCMD.Text + "AL" + "\n");
+                SendData(textBoxConnectCMD.Text + "AF" + "\n");
+                SendData(textBoxConnectCMD.Text + "DP" + "\n");
+                SendData(textBoxConnectCMD.Text + "DI" + "\n");
+                SendData(textBoxConnectCMD.Text + "DD" + "\n");
+                SendData(textBoxConnectCMD.Text + "DR" + "\n");
+                SendData(textBoxConnectCMD.Text + "DL" + "\n");
+                SendData(textBoxConnectCMD.Text + "DF" + "\n");
+                SendData(textBoxConnectCMD.Text + "QP" + "\n");
+                SendData(textBoxConnectCMD.Text + "QI" + "\n");
+                SendData(textBoxConnectCMD.Text + "QD" + "\n");
+                SendData(textBoxConnectCMD.Text + "QR" + "\n");
+                SendData(textBoxConnectCMD.Text + "QL" + "\n");
+                SendData(textBoxConnectCMD.Text + "QF" + "\n");
+                SendData(textBoxConnectCMD.Text + "LV" + "\n");
+                SendData(textBoxConnectCMD.Text + "LU" + "\n");
+                SendData(textBoxConnectCMD.Text + "LC" + "\n");
+                SendData(textBoxConnectCMD.Text + "SM" + "\n");
+                SendData(textBoxConnectCMD.Text + "SE" + "\n");
+                SendData(textBoxConnectCMD.Text + "R" + "\n");
+                SendData(textBoxConnectCMD.Text + "WC" + "\n");
+                //await Task.Delay(dt);
+                SendData(textBoxConnectCMD.Text + "E" + "\n");
             });
         }
-
         private void buttonSend_Click(object sender, EventArgs e)
         {
-            SendData(Encoding.ASCII.GetBytes(textBoxCMD.Text + "\n"));
+            SendData(textBoxCMD.Text + "\n");
         }
-
         private void buttonClear_Click(object sender, EventArgs e)
         {
             this.Invoke(new Action(() =>
@@ -698,7 +740,6 @@ namespace simpleFOCTuning
                 richTextBox1.Clear();
             }));
         }
-
         private void buttonGeneral_Click(object sender, EventArgs e)
         {
             try
@@ -707,14 +748,14 @@ namespace simpleFOCTuning
                 {
                     this.Invoke(new Action(() =>
                     {
-                        if(buttonGeneral.Text == "Stop")buttonGeneral.Text ="Start";
-                        else if(buttonGeneral.Text == "Start") buttonGeneral.Text = "Stop";
+                        if (buttonGeneral.Text == "Stop") buttonGeneral.Text = "Start";
+                        else if (buttonGeneral.Text == "Start") buttonGeneral.Text = "Stop";
                     }));
-                    while(buttonGeneral.Text == "Stop")
+                    while (buttonGeneral.Text == "Stop")
                     {
-                        SendData(Encoding.ASCII.GetBytes(textBoxGeneralCMD.Text + textBoxPos1.Text + "\n"));
+                        SendData(textBoxGeneralCMD.Text + textBoxPos1.Text + "\n");
                         await Task.Delay(Int32.Parse(textBoxInterval.Text));
-                        SendData(Encoding.ASCII.GetBytes(textBoxGeneralCMD.Text + textBoxPos2.Text + "\n"));
+                        SendData(textBoxGeneralCMD.Text + textBoxPos2.Text + "\n");
                         await Task.Delay(Int32.Parse(textBoxInterval.Text));
                     }
                 });
@@ -724,7 +765,6 @@ namespace simpleFOCTuning
                 ;
             }
         }
-
         private void buttonChartStart_Click(object sender, EventArgs e)
         {
             _viewModelTarget.Read();

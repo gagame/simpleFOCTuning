@@ -40,7 +40,7 @@ namespace simpleFOCTuning
 
             //lets keep in memory only the last 20000 records,
             //to keep everything running faster
-            const int keepRecords = 10000;
+            const int keepRecords = 4000;
             IsReading = true;
 
             Action readFromTread = () =>
@@ -70,9 +70,7 @@ namespace simpleFOCTuning
             //Task.Factory.StartNew(readFromTread);
             //Task.Factory.StartNew(readFromTread);
             Task.Factory.StartNew(readFromTread);
-            //Task.Factory.StartNew(readFromTread);
-            //Task.Factory.StartNew(readFromTread);
-            //Task.Factory.StartNew(readFromTread);
+            Task.Factory.StartNew(readFromTread);
             //Task.Factory.StartNew(readFromTread);
             //Task.Factory.StartNew(readFromTread);
         }

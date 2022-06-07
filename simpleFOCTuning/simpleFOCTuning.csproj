@@ -78,6 +78,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackgroundTimer.cs" />
     <Compile Include="ConfigureSerialConnect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,6 +92,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="LiveChart.cs" />
+    <Compile Include="PortReceiveDataEventArgs.cs" />
     <Compile Include="PropertySorter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
